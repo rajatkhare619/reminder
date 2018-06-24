@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, HostListener} from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +6,13 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app';
+  sidenavOpened = false;
+
+  @HostListener('document:mousemove', ['$event']) toggleSidenav(e) {
+    if (e.clientX <= 20) {
+      this.sidenavOpened = true;
+    } else {
+    this.sidenavOpened = false;
+    }
+  }
 }
