@@ -1,0 +1,33 @@
+<div>
+  <form #form="ngForm"  fxLayout="column" fxLayoutAlign="center center">
+    <mat-form-field appearance="outline">
+      <mat-label>Enter the note</mat-label>
+      <textarea matInput></textarea>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-select multiple placeholder="How do you want to be reminded?">
+        <mat-option *ngFor="let option of reminderOptions" [value]="option">{{option}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-chip-list #chipList>
+        <mat-chip [removable]="true" *ngFor="let email of emails" (removed)="removeEmail(email)">
+          {{email}}<mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+        <input placeholder="Enter emails separated by pressing enter or space"
+               [matChipInputFor]="chipList"
+               [matChipInputSeparatorKeyCodes]="keyCodes"
+               (matChipInputTokenEnd)="addEmail($event)">
+      </mat-chip-list>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Enter phone number</mat-label>
+      <input matInput minlength="10" maxlength="10">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput required [matDatepicker]="picker" [min]="minDate" (dateChange)="getDate($event)" placeholder="Select date and time">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker type="datetime"></mat-datepicker>
+    </mat-form-field>
+  </form>
+</div>

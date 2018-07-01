@@ -23,7 +23,10 @@
     "@angular/platform-browser": "^6.0.3",
     "@angular/platform-browser-dynamic": "^6.0.3",
     "@angular/router": "^6.0.3",
+    "@coachcare/datepicker": "^0.9.3",
     "core-js": "^2.5.4",
+    "moment": "^2.22.2",
+    "moment-timezone": "^0.5.21",
     "rxjs": "^6.0.0",
     "zone.js": "^0.8.26"
   },
