@@ -1,6 +1,7 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {COMMA, ENTER, SPACE} from "@angular/cdk/keycodes";
 import {MatChipInputEvent} from "@angular/material";
+import {MessagingService} from "../messaging.service";
 
 @Component({
   selector: 'app-newreminder',
@@ -14,7 +15,7 @@ reminderOptions = ["Phone", "Email", "Browser notification"];
 emails = [];
 keyCodes = [ENTER, SPACE];
   minDate;
-  constructor() { }
+  constructor(private msgService: MessagingService) { }
 
   ngOnInit() {
     this.minDate = new Date();
@@ -43,5 +44,9 @@ keyCodes = [ENTER, SPACE];
 
   getDate(date) {
     console.log(date.value._d);
+  }
+
+  addReminder() {
+    this.msgService.getPermission();
   }
 }

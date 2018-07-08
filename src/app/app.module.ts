@@ -15,6 +15,13 @@ import {FormsModule} from "@angular/forms";
 import {MatMomentDateModule} from "@coachcare/datepicker";
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatDatepickerModule, MomentDateModule,
         MomentDateAdapter} from '@coachcare/datepicker';
+import {AngularFireDatabase, AngularFireDatabaseModule} from "angularfire2/database";
+import {AngularFireAuth, AngularFireAuthModule} from "angularfire2/auth";
+import {AngularFireModule} from "angularfire2";
+import {environment} from "../environments/environment";
+/*import * as firebase from 'firebase';
+
+firebase.initializeApp(environment.firebase);*/
 
 @NgModule({
   declarations: [
@@ -33,11 +40,15 @@ import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatDatepickerModule, Mom
     MatMomentDateModule,
     FlexLayoutModule,
     RoutingModule,
-    FormsModule
+    FormsModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireDatabaseModule,
+    AngularFireAuthModule
   ],
   providers: [
     {provide: MAT_DATE_LOCALE, useValue: 'en'},
-    {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]}],
+    {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]}
+    ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
