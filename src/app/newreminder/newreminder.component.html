@@ -2,7 +2,7 @@
   <form #form="ngForm"  fxLayout="column" fxLayoutAlign="center center">
     <mat-form-field appearance="outline">
       <mat-label>Enter the note</mat-label>
-      <textarea matInput></textarea>
+      <textarea matInput [(ngModel)]="message" name="message"></textarea>
     </mat-form-field>
     <mat-form-field>
       <mat-select multiple placeholder="How do you want to be reminded?">

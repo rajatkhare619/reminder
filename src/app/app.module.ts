@@ -19,6 +19,7 @@ import {AngularFireDatabase, AngularFireDatabaseModule} from "angularfire2/datab
 import {AngularFireAuth, AngularFireAuthModule} from "angularfire2/auth";
 import {AngularFireModule} from "angularfire2";
 import {environment} from "../environments/environment";
+import {HttpClientModule} from "@angular/common/http";
 /*import * as firebase from 'firebase';
 
 firebase.initializeApp(environment.firebase);*/
@@ -34,6 +35,7 @@ firebase.initializeApp(environment.firebase);*/
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     BrowserAnimationsModule,
     MaterialComponentsModule,
     MatDatepickerModule,
