@@ -1,8 +1,11 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {COMMA, ENTER, SPACE} from "@angular/cdk/keycodes";
-import {MatChipInputEvent} from "@angular/material";
+import {MatChipInputEvent, MatSnackBar} from "@angular/material";
 import {MessagingService} from "../messaging.service";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {NotificationService} from "../notification.service";
+import {EmailService} from "../email.service";
+import {SmsService} from "../sms.service";
 
 @Component({
   selector: 'app-newreminder',
@@ -12,13 +15,23 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 
 })
 export class NewreminderComponent implements OnInit {
+
 reminderOptions = ["Phone", "Email", "Browser notification"];
 emails = [];
+  reminderMethods = [];
 keyCodes = [ENTER, SPACE];
   minDate;
   scheduleTime;
   message;
-  constructor(private msgService: MessagingService, private http: HttpClient) { }
+  phone;
+  re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+  constructor(private msgService: MessagingService,
+              private http: HttpClient,
+              private notificationService: NotificationService,
+              private snackbar: MatSnackBar,
+              private emailService: EmailService,
+              private smsService: SmsService) { }
 
   ngOnInit() {
     this.minDate = new Date();
@@ -28,8 +41,12 @@ keyCodes = [ENTER, SPACE];
     const input = event.input;
     const value = event.value;
 
-    if ((value || '').trim()) {
+    if ((value || '').trim() && this.re.test(value)) {
       this.emails.push(value.trim());
+    } else {
+      this.snackbar.open("Please enter a valid email", null, {
+        duration: 2000
+      });
     }
 
     if (input) {
@@ -46,32 +63,20 @@ keyCodes = [ENTER, SPACE];
   }
 
   getDate(date) {
+    console.log(date.value._d);
    this.scheduleTime = date.value._d;
   }
 
   addReminder() {
-    this.msgService.getPermission();
+    // this.msgService.getPermission();
+    this.notificationService.setNotification(this.message, this.scheduleTime);
   }
 
-  sendnotif() {
-    const url = 'https://onesignal.com/api/v1/notifications';
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json; charset=utf-8',
-        'Authorization': 'Basic ZGI5MTk3MjQtYmFmZi00YWM2LWJhMTEtMDUzYWMyNTM3N2Zm'
-      })
-    };
-    const body = {
-      "app_id": "5a844928-023c-4201-bb5d-d055cd760859",
-      "include_player_ids": ["9ea0f20c-ba24-4691-b489-9cbba523a058"],
-      "data": {"foo": "bar"},
-      "contents": {"en": this.message},
-      "send_after": this.scheduleTime
-    };
+  sendEmail() {
+    this.emailService.sendEmail();
+  }
 
-    this.http.post(url, body, httpOptions)
-      .subscribe(res => {
-        console.log(res);
-      } );
+  sendSms() {
+    this.smsService.sendSms(this.message, this.phone, this.scheduleTime);
   }
 }

@@ -14,15 +14,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.authService.signInAnonymously();
     const OneSignal = window['OneSignal'] || [];
-    /*OneSignal.push(function() {
-      OneSignal.init({
-        appId: "593e4406-7c7b-40b6-9331-888dd1923f4b",
-        autoRegister: false,
-        notifyButton: {
-          enable: true,
-        },
-      });
-    });*/
+
     OneSignal.push(["init", {
       appId: "5a844928-023c-4201-bb5d-d055cd760859",
       autoRegister: false,
@@ -30,16 +22,22 @@ export class AppComponent implements OnInit {
         enable: true
       }
     }]);
-    OneSignal.push(function () {
-      console.log('Register For Push');
-/*
-      OneSignal.push(["registerForPushNotifications"]);
-*/
-      OneSignal.registerForPushNotifications({
-        modalPrompt: true
-      });
-    });
 
+    OneSignal.push(() => {
+      // Check if subscribed on load
+      OneSignal.isPushNotificationsEnabled().then((isSubscribed) => {
+        if (!isSubscribed) {
+          OneSignal.push(function () {
+            console.log('Register For Push');
+            OneSignal.registerForPushNotifications({
+              modalPrompt: true
+            });
+          });
+        }
+      });
+      // Check if user hits the subscribe button
+
+    })
     OneSignal.push(function () {
       // Occurs when the user's subscription changes to a new value.
       OneSignal.on('subscriptionChange', function (isSubscribed) {
@@ -49,6 +47,8 @@ export class AppComponent implements OnInit {
         });
       });
     });
+
+
   }
 
   @HostListener('document:mousemove', ['$event']) toggleSidenav(e) {

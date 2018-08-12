@@ -5,16 +5,19 @@
       <textarea matInput [(ngModel)]="message" name="message"></textarea>
     </mat-form-field>
     <mat-form-field>
-      <mat-select multiple placeholder="How do you want to be reminded?">
+      <mat-select multiple placeholder="How do you want to be reminded?" [(ngModel)]="reminderMethods" name="methodsSelect">
         <mat-option *ngFor="let option of reminderOptions" [value]="option">{{option}}</mat-option>
       </mat-select>
     </mat-form-field>
     <mat-form-field>
       <mat-chip-list #chipList>
-        <mat-chip [removable]="true" *ngFor="let email of emails" (removed)="removeEmail(email)">
+        <mat-chip [removable]="true" *ngFor="let email of emails" (removed)="removeEmail(email)" >
           {{email}}<mat-icon matChipRemove>cancel</mat-icon>
         </mat-chip>
         <input placeholder="Enter emails separated by pressing enter or space"
+               [disabled]="!reminderMethods.includes('Email')"
+               type="email"
+               email
                [matChipInputFor]="chipList"
                [matChipInputSeparatorKeyCodes]="keyCodes"
                (matChipInputTokenEnd)="addEmail($event)">
@@ -22,7 +25,7 @@
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Enter phone number</mat-label>
-      <input matInput minlength="10" maxlength="10">
+      <input matInput minlength="10" maxlength="10" required [(ngModel)]="phone" name="phone">
     </mat-form-field>
     <mat-form-field>
       <input matInput required [matDatepicker]="picker" [min]="minDate" (dateChange)="getDate($event)" placeholder="Select date and time">
@@ -30,5 +33,6 @@
       <mat-datepicker #picker type="datetime"></mat-datepicker>
     </mat-form-field>
       <button mat-raised-button color="primary" (click)="addReminder()">Add reminder</button>
+    <button (click)="sendSms()" [disabled]="form.invalid">Send SMS</button>
   </form>
 </div>
