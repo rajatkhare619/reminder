@@ -14,11 +14,12 @@ import {SmsService} from "../sms.service";
   encapsulation: ViewEncapsulation.None,
 
 })
+
 export class NewreminderComponent implements OnInit {
 
 reminderOptions = ["Phone", "Email", "Browser notification"];
 emails = [];
-  reminderMethods = [];
+  selectedReminderMethods = [];
 keyCodes = [ENTER, SPACE];
   minDate;
   scheduleTime;
@@ -63,20 +64,25 @@ keyCodes = [ENTER, SPACE];
   }
 
   getDate(date) {
-    console.log(date.value._d);
    this.scheduleTime = date.value._d;
   }
 
   addReminder() {
-    // this.msgService.getPermission();
-    this.notificationService.setNotification(this.message, this.scheduleTime);
+
+    if (this.selectedReminderMethods.includes("Phone")) {
+      this.smsService.sendSms(this.message, this.phone, this.scheduleTime);
+    }
+    if (this.selectedReminderMethods.includes("Email")) {
+      this.emailService.sendEmail(this.message, this.emails, this.scheduleTime);
+    }
+    if (this.selectedReminderMethods.includes("Browser notification")) {
+      this.notificationService.setNotification(this.message, this.scheduleTime);
+    }
   }
 
-  sendEmail() {
-    this.emailService.sendEmail();
-  }
-
-  sendSms() {
-    this.smsService.sendSms(this.message, this.phone, this.scheduleTime);
+  selectedReminderMethodsChanged(methods) {
+    if (methods.includes("Browser notification")) {
+     this.notificationService.startOneSignal();
+    }
   }
 }

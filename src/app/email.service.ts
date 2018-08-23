@@ -5,23 +5,14 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
   providedIn: 'root'
 })
 export class EmailService {
-  emailScriptUrl = 'https://script.google.com/macros/s/AKfycbwMb9f0X77vuOTevTyKpgluYmDCMxGaOCgEpybQjAYMfQdgYWI/exec';
-  httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type': 'application/x-www-form-urlencoded'
-    })
-  };
-
+  serverURL = 'https://remindmeapplication.herokuapp.com';
   constructor(private http: HttpClient) { }
 
-  sendEmail() {
-  const formData = new FormData();
-
-  formData.append("email", "test@example.com");
-    formData.append("message", "Hello");
-    this.http.post(this.emailScriptUrl, {name: "Application Desvelopment Analystd"}, this.httpOptions)
-      .subscribe(res => {
-        console.log(res);
-      } );
+  sendEmail(message, to, scheduledTime) {
+    const delayInMinutes = Math.round((scheduledTime.getTime() - new Date().getTime()) / 60000);
+    this.http.get(`${this.serverURL}/email/${message}/${to}/${delayInMinutes}`, {responseType: 'text'})
+      .subscribe(data => {
+        console.log(data);
+      });
   }
 }
