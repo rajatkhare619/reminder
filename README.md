@@ -25,4 +25,4 @@ If you have any suggestions on improving the application, any code refactoring t
 
 ## Note
 
-This repository contains just the front-end part of the application. The back-end is built on Node.js and is not open source because it has many API keys that need to be private for security purposes. If you are interested, I can give you the source code of the back-end after removing the API keys.
+This repository contains just the front-end part of the application. The back-end is built on Node.js and is not open source because it has many API keys that need to be private for security reasons. If you are interested, I can give you the source code of the back-end after removing the API keys.
