@@ -1,6 +1,6 @@
 # Reminder
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.8.
+This is a web application that can be used to send messages to various platforms primarily acting as a means of a reminder for important tasks.
 
 ## Development server
 
