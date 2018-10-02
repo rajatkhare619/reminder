@@ -1,38 +1,41 @@
-<div>
-  <form #form="ngForm"  fxLayout="column" fxLayoutAlign="center center">
+<div class="form-container">
+  <form novalidate [formGroup]="reminderForm" fxLayout="column" fxLayoutAlign="center center" (ngSubmit)="addReminder()">
     <mat-form-field appearance="outline">
       <mat-label>Enter the note</mat-label>
-      <textarea matInput [(ngModel)]="message" name="message"></textarea>
+      <textarea matInput formControlName="message"></textarea>
+      <mat-error *ngIf="reminderForm.get('message').hasError('required')">Field required</mat-error>
     </mat-form-field>
     <mat-form-field>
-      <mat-select multiple placeholder="How do you want to be reminded?" [(ngModel)]="selectedReminderMethods" name="methodsSelect" (valueChange)="selectedReminderMethodsChanged($event)">
+      <mat-select multiple placeholder="How do you want to be reminded?" formControlName="selectedReminderMethods">
         <mat-option *ngFor="let option of reminderOptions" [value]="option">{{option}}</mat-option>
       </mat-select>
+      <mat-error *ngIf="reminderForm.get('selectedReminderMethods').hasError('required')">Field required</mat-error>
     </mat-form-field>
-    <mat-form-field>
-      <mat-chip-list #chipList [ngClass]="{'disable-outline': !selectedReminderMethods.includes('Email')}">
-        <mat-chip [removable]="true" *ngFor="let email of emails" (removed)="removeEmail(email)" >
-          {{email}}<mat-icon matChipRemove>cancel</mat-icon>
+    <mat-form-field *ngIf="showEmail" [ngClass]="{'mat-form-field-invalid': !emailsValid}">
+      <mat-chip-list #chipList formControlName="email">
+        <mat-chip  [removable]="true" *ngFor="let email of reminderForm.get('emails').controls; let i = index;" (removed)="removeEmail(i)" >
+          {{email.value}}<mat-icon matChipRemove>cancel</mat-icon>
         </mat-chip>
         <input placeholder="Enter emails separated by pressing enter or space"
-               class="disable-outline"
-               [disabled]="!selectedReminderMethods.includes('Email')"
-               type="email"
-               email
                [matChipInputFor]="chipList"
                [matChipInputSeparatorKeyCodes]="keyCodes"
                (matChipInputTokenEnd)="addEmail($event)">
       </mat-chip-list>
+      <mat-error *ngIf="!emailsValid">Field required</mat-error>
     </mat-form-field>
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" *ngIf="showPhone">
       <mat-label>Enter phone number</mat-label>
-      <input matInput minlength="10" maxlength="10" required [(ngModel)]="phone" name="phone"  [disabled]="!selectedReminderMethods.includes('Phone')">
+      <input matInput minlength="10" maxlength="10" formControlName="phone" name="phone">
+      <mat-error *ngIf="reminderForm.get('phone').hasError('required')">Field required</mat-error>
     </mat-form-field>
-    <mat-form-field>
-      <input matInput required [matDatepicker]="picker" [min]="minDate" (dateChange)="getDate($event)" placeholder="Select date and time">
+    <mat-form-field *ngIf="showDateTimePicker">
+      <input matInput [matDatepicker]="picker" [min]="minDate" (dateChange)="getDate($event)" placeholder="Select date and time" formControlName="time">
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker type="datetime"></mat-datepicker>
     </mat-form-field>
-      <button mat-raised-button color="primary" (click)="addReminder()">Add a reminder</button>
+    <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="30px">
+      <button mat-raised-button color="primary" type="submit" [disabled]="reminderForm.invalid || !emailsValid">Add a reminder</button>
+      <button mat-raised-button color="primary" type="button" (click)="resetForm()">Reset form</button>
+    </div>
   </form>
 </div>

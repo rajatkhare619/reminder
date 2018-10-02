@@ -11,7 +11,7 @@ import {HeaderComponent} from "./header/header.component";
 import { NewreminderComponent } from './newreminder/newreminder.component';
 import {RoutingModule} from "./routing/routing.module";
 import { WelcomeComponent } from './welcome/welcome.component';
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatMomentDateModule} from "@coachcare/datepicker";
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatDatepickerModule, MomentDateModule,
         MomentDateAdapter} from '@coachcare/datepicker';
@@ -43,6 +43,7 @@ firebase.initializeApp(environment.firebase);*/
     FlexLayoutModule,
     RoutingModule,
     FormsModule,
+    ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
     AngularFireAuthModule

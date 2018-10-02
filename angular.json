@@ -22,13 +22,18 @@
               "src/favicon.ico",
               "src/assets",
               "src/firebase-messaging-sw.js",
-              "src/manifest.json"
+              "src/manifest.json",
+              "src/OneSignalSDK.js",
+              "src/OneSignalSDKWorker.js",
+              "src/OneSignalSDKUpdaterWorker.js"
             ],
             "styles": [
               "src/styles.css",
               "node_modules/@coachcare/datepicker/prebuilt-themes/indigo-pink.css"
             ],
-            "scripts": []
+            "scripts": [
+
+            ]
           },
           "configurations": {
             "production": {

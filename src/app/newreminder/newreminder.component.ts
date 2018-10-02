@@ -1,11 +1,21 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {COMMA, ENTER, SPACE} from "@angular/cdk/keycodes";
+import {
+  AfterContentInit,
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef, OnChanges,
+  OnInit, Renderer2,
+  ViewChild, ViewChildren,
+  ViewEncapsulation
+} from '@angular/core';
+import {COMMA, ENTER, SPACE, NUMPAD_MINUS} from "@angular/cdk/keycodes";
 import {MatChipInputEvent, MatSnackBar} from "@angular/material";
 import {MessagingService} from "../messaging.service";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {NotificationService} from "../notification.service";
 import {EmailService} from "../email.service";
 import {SmsService} from "../sms.service";
+import {FormArray, FormControl, FormGroup, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-newreminder',
@@ -16,34 +26,60 @@ import {SmsService} from "../sms.service";
 })
 
 export class NewreminderComponent implements OnInit {
-
-reminderOptions = ["Phone", "Email", "Browser notification"];
-emails = [];
+  t=false;
+  oneSignalStarted = false;
+  reminderOptions = ["Phone", "Email", "Browser notification"];
+  emails = [];
+  emailsValid = true;
+  showEmail = false;
+  showPhone = false;
+  showDateTimePicker = false;
   selectedReminderMethods = [];
-keyCodes = [ENTER, SPACE];
+  keyCodes = [ENTER, SPACE, COMMA];
   minDate;
   scheduleTime;
   message;
   phone;
   re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  reminderForm = new FormGroup({
+    message: new FormControl('', [Validators.required]),
+    selectedReminderMethods: new FormControl('', [Validators.required]),
+    phone: new FormControl(''),
+    email: new FormControl(''),
+    emails: new FormArray([]),
+    time: new FormControl(new Date(), )
+  });
 
+  @ViewChildren('chipList') chipList;
   constructor(private msgService: MessagingService,
               private http: HttpClient,
               private notificationService: NotificationService,
               private snackbar: MatSnackBar,
               private emailService: EmailService,
-              private smsService: SmsService) { }
+              private smsService: SmsService,
+              private changeDetRef: ChangeDetectorRef,
+              private elRef: ElementRef) { }
 
   ngOnInit() {
     this.minDate = new Date();
+    this.reminderForm.get('selectedReminderMethods').valueChanges.subscribe((methods) => {
+      methods.includes("Phone") ? (this.showPhone = true, this.reminderForm.get('phone').setValidators([Validators.required])) : (this.showPhone = false, this.reminderForm.get('phone').setValidators([]));
+      methods.includes("Email") ? (this.showEmail = true, this.reminderForm.get('email').setValidators([Validators.required])) : this.showEmail = false;
+
+      this.isValidEmails();
+      this.showDateTimePicker = methods.length > 0;
+      this.changeDetRef.detectChanges();
+    });
+
   }
 
   addEmail(event: MatChipInputEvent): void {
     const input = event.input;
     const value = event.value;
 
-    if ((value || '').trim() && this.re.test(value)) {
-      this.emails.push(value.trim());
+    if ((value || '').trim() && this.re.test(value.trim())) {
+      const emails = this.reminderForm.get('emails') as FormArray;
+      emails.push(new FormControl(value.trim()));
     } else {
       this.snackbar.open("Please enter a valid email", null, {
         duration: 2000
@@ -53,18 +89,22 @@ keyCodes = [ENTER, SPACE];
     if (input) {
       input.value = '';
     }
+
+    this.isValidEmails();
   }
 
-  removeEmail(email): void {
-    const index = this.emails.indexOf(email);
+  removeEmail(index: number): void {
+    const emails = this.reminderForm.get('emails') as FormArray;
 
     if (index >= 0) {
-      this.emails.splice(index, 1);
+      emails.removeAt(index);
     }
+
+    this.isValidEmails();
   }
 
   getDate(date) {
-   this.scheduleTime = date.value._d;
+    this.scheduleTime = date.value._d;
   }
 
   addReminder() {
@@ -74,15 +114,43 @@ keyCodes = [ENTER, SPACE];
     }
     if (this.selectedReminderMethods.includes("Email")) {
       this.emailService.sendEmail(this.message, this.emails, this.scheduleTime);
+
     }
     if (this.selectedReminderMethods.includes("Browser notification")) {
       this.notificationService.setNotification(this.message, this.scheduleTime);
     }
+
+    this.snackbar.open("Reminder set", null, { duration: 3000} );
   }
 
-  selectedReminderMethodsChanged(methods) {
-    if (methods.includes("Browser notification")) {
-     this.notificationService.startOneSignal();
+  isValidEmails() {
+    if(!this.chipList.first) {console.log("chip");}
+    if (this.reminderForm.get('selectedReminderMethods').value) {
+      if (this.reminderForm.get('selectedReminderMethods').value.includes('Email')) {
+
+        // (this.reminderForm.get('emails') as FormArray).length > 0 ? (this.emailsValid = true) : (this.emailsValid = false);
+        if ((this.reminderForm.get('emails') as FormArray).length > 0) {
+          this.emailsValid = true;
+
+        } else {
+          this.emailsValid = false;
+
+
+        }
+      } else {
+        this.emailsValid = true;
+      }
     }
   }
+
+  resetForm() {
+    this.reminderForm.reset({
+      message: '',
+      selectedReminderMethods: [],
+      phone: '',
+      emails: new FormArray([]),
+      time: new FormControl(new Date())
+    });
+  }
+
 }
