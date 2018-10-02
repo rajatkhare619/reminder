@@ -40,6 +40,7 @@ export class NewreminderComponent implements OnInit {
   scheduleTime;
   message;
   phone;
+  formValid = false;
   re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   reminderForm = new FormGroup({
     message: new FormControl('', [Validators.required]),
@@ -47,7 +48,7 @@ export class NewreminderComponent implements OnInit {
     phone: new FormControl(''),
     email: new FormControl(''),
     emails: new FormArray([]),
-    time: new FormControl(new Date(), )
+    time: new FormControl(new Date())
   });
 
   @ViewChildren('chipList') chipList;
@@ -64,12 +65,23 @@ export class NewreminderComponent implements OnInit {
     this.minDate = new Date();
     this.reminderForm.get('selectedReminderMethods').valueChanges.subscribe((methods) => {
       methods.includes("Phone") ? (this.showPhone = true, this.reminderForm.get('phone').setValidators([Validators.required])) : (this.showPhone = false, this.reminderForm.get('phone').setValidators([]));
-      methods.includes("Email") ? (this.showEmail = true, this.reminderForm.get('email').setValidators([Validators.required])) : this.showEmail = false;
-
+      methods.includes("Email") ? (this.showEmail = true, this.reminderForm.get('email').setValidators([Validators.required])) : (this.showEmail = false, this.reminderForm.get('email').setValidators([]));
       this.isValidEmails();
       this.showDateTimePicker = methods.length > 0;
-      this.changeDetRef.detectChanges();
+
     });
+    this.reminderForm.valueChanges.subscribe((value) => {
+      this.isValidEmails();
+      if (this.reminderForm.controls['phone'].status === "VALID" && this.reminderForm.controls['message'].status === "VALID"
+        && this.reminderForm.controls['time'].status === "VALID" && this.reminderForm.controls['selectedReminderMethods'].status === "VALID"
+        && this.emailsValid) {
+        this.formValid = true;
+      } else {
+        this.formValid = false;
+      }
+      console.log(this.reminderForm);
+    });
+    this.changeDetRef.detectChanges();
 
   }
 
@@ -120,26 +132,14 @@ export class NewreminderComponent implements OnInit {
       this.notificationService.setNotification(this.message, this.scheduleTime);
     }
 
-    this.snackbar.open("Reminder set", null, { duration: 3000} );
+    this.snackbar.open("Reminder set", null, { duration: 2000} );
   }
 
   isValidEmails() {
-    if(!this.chipList.first) {console.log("chip");}
-    if (this.reminderForm.get('selectedReminderMethods').value) {
-      if (this.reminderForm.get('selectedReminderMethods').value.includes('Email')) {
-
-        // (this.reminderForm.get('emails') as FormArray).length > 0 ? (this.emailsValid = true) : (this.emailsValid = false);
-        if ((this.reminderForm.get('emails') as FormArray).length > 0) {
-          this.emailsValid = true;
-
-        } else {
-          this.emailsValid = false;
-
-
-        }
-      } else {
-        this.emailsValid = true;
-      }
+    if (this.reminderForm.get('selectedReminderMethods').value && this.reminderForm.get('selectedReminderMethods').value.includes('Email')) {
+      (this.reminderForm.get('emails') as FormArray).length > 0 ? (this.emailsValid = true, this.reminderForm.controls['email'].setErrors(null)) : (this.emailsValid = false);
+    } else {
+      this.emailsValid = true;
     }
   }
 
@@ -148,9 +148,13 @@ export class NewreminderComponent implements OnInit {
       message: '',
       selectedReminderMethods: [],
       phone: '',
+      email:'',
       emails: new FormArray([]),
-      time: new FormControl(new Date())
+      time: new Date().setTime(new Date().getTime() + (60 * 60 * 1000))
     });
+    while((this.reminderForm.controls['emails'] as FormArray).length !== 0) {
+      (this.reminderForm.controls['emails'] as FormArray).removeAt(0);
+    }
   }
 
 }

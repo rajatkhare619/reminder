@@ -14,7 +14,7 @@
     <mat-form-field *ngIf="showEmail" [ngClass]="{'mat-form-field-invalid': !emailsValid}">
       <mat-chip-list #chipList formControlName="email">
         <mat-chip  [removable]="true" *ngFor="let email of reminderForm.get('emails').controls; let i = index;" (removed)="removeEmail(i)" >
-          {{email.value}}<mat-icon matChipRemove>cancel</mat-icon>
+          {{email.value !== '' ? email.value : null}}<mat-icon matChipRemove>cancel</mat-icon>
         </mat-chip>
         <input placeholder="Enter emails separated by pressing enter or space"
                [matChipInputFor]="chipList"
@@ -34,7 +34,7 @@
       <mat-datepicker #picker type="datetime"></mat-datepicker>
     </mat-form-field>
     <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="30px">
-      <button mat-raised-button color="primary" type="submit" [disabled]="reminderForm.invalid || !emailsValid">Add a reminder</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="!formValid">Add a reminder</button>
       <button mat-raised-button color="primary" type="button" (click)="resetForm()">Reset form</button>
     </div>
   </form>
