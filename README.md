@@ -1,27 +1,28 @@
 # Reminder
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.8.
+This is a web application that can be used to send messages to various platforms primarily acting as a means of a reminder for important tasks.
 
-## Development server
+## Methods supported
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Currently, reminders can be set using the following methods:
+1. Push notification
+2. SMS (India only)
+3. Email
 
-## Code scaffolding
+More methods may be added in the future.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## How to use?
 
-## Build
+Go to https://reminder619.firebaseapp.com
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+## Questions?
 
-## Running unit tests
+Contact me at rajatkhare.com.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Interested in contributing?
 
-## Running end-to-end tests
+If you have any suggestions on improving the application, any code refactoring that you can do for improvement just fork the repository and start contributing. Any help in contribution is greatly appreciated.
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+## Note
 
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+This repository contains just the front-end part of the application. The back-end is built on Node.js and is not open source because it has many API keys that need to be private for security reasons. If you are interested, I can give you the source code of the back-end after removing the API keys.
