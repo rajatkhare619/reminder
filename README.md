@@ -6,7 +6,7 @@ This is a web application that can be used to send messages to various platforms
 
 Currently, reminders can be set using the following methods:
 1. Push notification
-2. SMS
+2. SMS (India only)
 3. Email
 
 More methods may be added in the future.
