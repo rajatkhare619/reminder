@@ -64,8 +64,13 @@ export class NewreminderComponent implements OnInit {
   ngOnInit() {
     this.minDate = new Date();
     this.reminderForm.get('selectedReminderMethods').valueChanges.subscribe((methods) => {
+      console.log(methods);
       methods.includes("Phone") ? (this.showPhone = true, this.reminderForm.get('phone').setValidators([Validators.required])) : (this.showPhone = false, this.reminderForm.get('phone').setValidators([]));
       methods.includes("Email") ? (this.showEmail = true, this.reminderForm.get('email').setValidators([Validators.required])) : (this.showEmail = false, this.reminderForm.get('email').setValidators([]));
+      if (methods.includes("Browser notification") && !this.oneSignalStarted) {
+        this.notificationService.startOneSignal();
+        this.oneSignalStarted = true;
+      }
       this.isValidEmails();
       this.showDateTimePicker = methods.length > 0;
 
@@ -79,7 +84,7 @@ export class NewreminderComponent implements OnInit {
       } else {
         this.formValid = false;
       }
-      console.log(this.reminderForm);
+     // console.log(this.reminderForm);
     });
     this.changeDetRef.detectChanges();
 
@@ -120,16 +125,20 @@ export class NewreminderComponent implements OnInit {
   }
 
   addReminder() {
-
-    if (this.selectedReminderMethods.includes("Phone")) {
-      this.smsService.sendSms(this.message, this.phone, this.scheduleTime);
+    const message = this.reminderForm.get('message').value;
+    const methods = this.reminderForm.get('selectedReminderMethods').value;
+    const emails = this.reminderForm.get('emails').value;
+    const time = this.scheduleTime || new Date();
+    if (methods.includes("Phone")) {
+      this.smsService.sendSms(message, this.reminderForm.get('phone').value, time);
     }
-    if (this.selectedReminderMethods.includes("Email")) {
-      this.emailService.sendEmail(this.message, this.emails, this.scheduleTime);
+    if (methods.includes("Email")) {
+
+      this.emailService.sendEmail(message, emails, time);
 
     }
-    if (this.selectedReminderMethods.includes("Browser notification")) {
-      this.notificationService.setNotification(this.message, this.scheduleTime);
+    if (methods.includes("Browser notification")) {
+      this.notificationService.setNotification(message, time);
     }
 
     this.snackbar.open("Reminder set", null, { duration: 2000} );

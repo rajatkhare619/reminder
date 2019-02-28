@@ -11,9 +11,11 @@ export class EmailService {
   constructor(private http: HttpClient, private snackBar: MatSnackBar) { }
 
   sendEmail(message, to, scheduledTime) {
+    console.log("scheduledTime", scheduledTime);
     const delayInMinutes = Math.round((scheduledTime.getTime() - new Date().getTime()) / 60000);
      this.http.get(`${this.serverURL}/email/${message}/${to}/${delayInMinutes}`, {responseType: 'text'})
       .subscribe(data => {
+        console.log(data);
         if (data["success"]) {
           // this.snackBar.open("SMS success", null, {
           //   duration: 2000

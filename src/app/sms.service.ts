@@ -16,6 +16,7 @@ export class SmsService {
 
    this.http.get(`${this.serverURL}/sms/${number}/${message}/${unixTimestamp}`, {responseType: 'text'})
       .subscribe(data => {
+        console.log(data);
         if (data.length >= 20) {
           // this.snackBar.open("SMS success", null, {
           //   duration: 2000
